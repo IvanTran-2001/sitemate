@@ -3,48 +3,90 @@ import { TodoForm } from './components/TodoForm';
 import { TodoItem } from './components/TodoItem';
 import { TodoFilter } from './components/TodoFilter';
 import type { Todo, FilterType } from './types/todo';
+import { todoAPI } from './api/todoAPI';
 import './App.css';
 
 function App() {
-  const [todos, setTodos] = useState<Todo[]>(() => {
-    const saved = localStorage.getItem('todos');
-    return saved ? JSON.parse(saved) : [];
-  });
-  
+  const [todos, setTodos] = useState<Todo[]>([]);
   const [filter, setFilter] = useState<FilterType>('all');
+  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    localStorage.setItem('todos', JSON.stringify(todos));
-  }, [todos]);
+    loadTodos();
+  }, []);
 
-  const addTodo = (text: string) => {
-    const newTodo: Todo = {
-      id: `${Date.now()}-${Math.random().toString(36).substr(2, 9)}`,
-      text,
-      completed: false,
-      createdAt: new Date(),
-    };
-    setTodos([newTodo, ...todos]);
+  const loadTodos = async () => {
+    try {
+      const data = await todoAPI.getAll();
+      const formattedTodos = data.map((todo: any) => ({
+        id: todo._id,
+        text: todo.text,
+        completed: todo.completed,
+        createdAt: new Date(todo.createdAt)
+      }));
+      setTodos(formattedTodos);
+    } catch (error) {
+      console.error('Failed to load todos:', error);
+    } finally {
+      setLoading(false);
+    }
   };
 
-  const toggleTodo = (id: string) => {
-    setTodos(todos.map(todo =>
-      todo.id === id ? { ...todo, completed: !todo.completed } : todo
-    ));
+  const addTodo = async (text: string) => {
+    try {
+      const newTodo = await todoAPI.create(text);
+      setTodos([{
+        id: newTodo._id,
+        text: newTodo.text,
+        completed: newTodo.completed,
+        createdAt: new Date(newTodo.createdAt)
+      }, ...todos]);
+    } catch (error) {
+      console.error('Failed to add todo:', error);
+    }
   };
 
-  const deleteTodo = (id: string) => {
-    setTodos(todos.filter(todo => todo.id !== id));
+  const toggleTodo = async (id: string) => {
+    const todo = todos.find(t => t.id === id);
+    if (!todo) return;
+
+    try {
+      await todoAPI.update(id, { completed: !todo.completed });
+      setTodos(todos.map(t =>
+        t.id === id ? { ...t, completed: !t.completed } : t
+      ));
+    } catch (error) {
+      console.error('Failed to toggle todo:', error);
+    }
   };
 
-  const editTodo = (id: string, newText: string) => {
-    setTodos(todos.map(todo =>
-      todo.id === id ? { ...todo, text: newText } : todo
-    ));
+  const deleteTodo = async (id: string) => {
+    try {
+      await todoAPI.delete(id);
+      setTodos(todos.filter(t => t.id !== id));
+    } catch (error) {
+      console.error('Failed to delete todo:', error);
+    }
   };
 
-  const clearCompleted = () => {
-    setTodos(todos.filter(todo => !todo.completed));
+  const editTodo = async (id: string, newText: string) => {
+    try {
+      await todoAPI.update(id, { text: newText });
+      setTodos(todos.map(t =>
+        t.id === id ? { ...t, text: newText } : t
+      ));
+    } catch (error) {
+      console.error('Failed to edit todo:', error);
+    }
+  };
+
+  const clearCompleted = async () => {
+    try {
+      await todoAPI.clearCompleted();
+      setTodos(todos.filter(t => !t.completed));
+    } catch (error) {
+      console.error('Failed to clear completed:', error);
+    }
   };
 
   const filteredTodos = todos.filter(todo => {
@@ -64,43 +106,51 @@ function App() {
       <div className="container">
         <header className="header">
           <h1>📝 Todo App</h1>
-          <p className="subtitle">Built with React + TypeScript</p>
+          <p className="subtitle">Built with React + TypeScript + Node.js</p>
         </header>
 
-        <TodoForm onAdd={addTodo} />
-
-        <TodoFilter
-          currentFilter={filter}
-          onFilterChange={setFilter}
-          counts={counts}
-        />
-
-        {filteredTodos.length === 0 ? (
+        {loading ? (
           <div className="empty-state">
-            <p>
-              {filter === 'all' && '✨ No todos yet. Add one to get started!'}
-              {filter === 'active' && '🎉 All done! No active todos.'}
-              {filter === 'completed' && '📭 No completed todos yet.'}
-            </p>
+            <p>Loading todos...</p>
           </div>
         ) : (
-          <ul className="todo-list">
-            {filteredTodos.map(todo => (
-              <TodoItem
-                key={todo.id}
-                todo={todo}
-                onToggle={toggleTodo}
-                onDelete={deleteTodo}
-                onEdit={editTodo}
-              />
-            ))}
-          </ul>
-        )}
+          <>
+            <TodoForm onAdd={addTodo} />
 
-        {counts.completed > 0 && (
-          <button onClick={clearCompleted} className="clear-completed">
-            Clear Completed ({counts.completed})
-          </button>
+            <TodoFilter
+              currentFilter={filter}
+              onFilterChange={setFilter}
+              counts={counts}
+            />
+
+            {filteredTodos.length === 0 ? (
+              <div className="empty-state">
+                <p>
+                  {filter === 'all' && '✨ No todos yet. Add one to get started!'}
+                  {filter === 'active' && '🎉 All done! No active todos.'}
+                  {filter === 'completed' && '📭 No completed todos yet.'}
+                </p>
+              </div>
+            ) : (
+              <ul className="todo-list">
+                {filteredTodos.map(todo => (
+                  <TodoItem
+                    key={todo.id}
+                    todo={todo}
+                    onToggle={toggleTodo}
+                    onDelete={deleteTodo}
+                    onEdit={editTodo}
+                  />
+                ))}
+              </ul>
+            )}
+
+            {counts.completed > 0 && (
+              <button onClick={clearCompleted} className="clear-completed">
+                Clear Completed ({counts.completed})
+              </button>
+            )}
+          </>
         )}
 
         <footer className="footer">
