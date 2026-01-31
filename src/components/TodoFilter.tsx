@@ -1,23 +1,9 @@
-/**
- * TodoFilter Component
- * 
- * Provides filter buttons to show different subsets of todos.
- * Displays the count of todos in each category.
- */
 import type { FilterType } from '../types/todo';
 import './TodoFilter.css';
 
-/**
- * Props for the TodoFilter component
- */
 interface TodoFilterProps {
-  /** The currently active filter */
   currentFilter: FilterType;
-  
-  /** Callback when a filter button is clicked */
   onFilterChange: (filter: FilterType) => void;
-  
-  /** Count of todos in each category for display badges */
   counts: {
     all: number;
     active: number;
@@ -25,10 +11,6 @@ interface TodoFilterProps {
   };
 }
 
-/**
- * Filter bar component that allows users to switch between
- * viewing all, active, or completed todos.
- */
 export const TodoFilter = ({ currentFilter, onFilterChange, counts }: TodoFilterProps) => {
   return (
     <div className="todo-filter">
