@@ -25,7 +25,7 @@ export const TodoForm = ({ onAdd }: TodoFormProps) => {
         placeholder="What needs to be done?"
         className="todo-input"
       />
-      <button type="submit" className="todo-submit">
+      <button type="submit" className={`todo-submit ${text === '' ? '' : 'active'}`}>
         Add Todo
       </button>
     </form>

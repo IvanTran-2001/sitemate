@@ -22,7 +22,7 @@
   color: #999;
 }
 
-.todo-submit {
+.todo-submit.active {
   padding: 14px 24px;
   background: #667eea;
   color: white;
@@ -35,12 +35,17 @@
   white-space: nowrap;
 }
 
-.todo-submit:hover {
+.todo-submit.active:hover {
   background: #5568d3;
 }
 
 .todo-submit:active {
-  transform: translateY(1px);
+  transform: translateY(px);
+}
+
+.todo-submit {
+  background: #ccc;
+  cursor: not-allowed;
 }
 
 @media (max-width: 600px) {
