@@ -7,7 +7,8 @@ router.get('/', async (req: Request, res: Response) => {
   try {
     const todos = await Todo.find().sort({ createdAt: -1 });
     res.json(todos);
-  } catch (error) {
+  } catch (err) {
+    console.error('Error fetching todos:', err);
     res.status(500).json({ error: 'Failed to fetch todos' });
   }
 });
@@ -23,7 +24,8 @@ router.post('/', async (req: Request, res: Response) => {
     const todo = new Todo({ text: text.trim() });
     await todo.save();
     res.status(201).json(todo);
-  } catch (error) {
+  } catch (err) {
+    console.error('Error creating todo:', err);
     res.status(500).json({ error: 'Failed to create todo' });
   }
 });
@@ -33,7 +35,7 @@ router.put('/:id', async (req: Request, res: Response) => {
     const { id } = req.params;
     const { text, completed } = req.body;
 
-    const updateData: any = {};
+    const updateData: { text?: string; completed?: boolean } = {};
     if (text !== undefined) updateData.text = text;
     if (completed !== undefined) updateData.completed = completed;
 
@@ -48,7 +50,8 @@ router.put('/:id', async (req: Request, res: Response) => {
     }
 
     res.json(todo);
-  } catch (error) {
+  } catch (err) {
+    console.error('Error updating todo:', err);
     res.status(500).json({ error: 'Failed to update todo' });
   }
 });
@@ -63,7 +66,8 @@ router.delete('/:id', async (req: Request, res: Response) => {
     }
 
     res.json({ message: 'Todo deleted successfully' });
-  } catch (error) {
+  } catch (err) {
+    console.error('Error deleting todo:', err);
     res.status(500).json({ error: 'Failed to delete todo' });
   }
 });
@@ -72,7 +76,8 @@ router.delete('/completed/all', async (req: Request, res: Response) => {
   try {
     await Todo.deleteMany({ completed: true });
     res.json({ message: 'Completed todos cleared' });
-  } catch (error) {
+  } catch (err) {
+    console.error('Error clearing completed todos:', err);
     res.status(500).json({ error: 'Failed to clear completed todos' });
   }
 });

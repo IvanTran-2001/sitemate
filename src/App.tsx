@@ -2,7 +2,7 @@ import { useState, useEffect } from 'react';
 import { TodoForm } from './components/TodoForm';
 import { TodoItem } from './components/TodoItem';
 import { TodoFilter } from './components/TodoFilter';
-import type { Todo, FilterType } from './types/todo';
+import type { Todo, TodoResponse, FilterType } from './types/todo';
 import { todoAPI } from './api/todoAPI';
 import './App.css';
 
@@ -18,7 +18,7 @@ function App() {
   const loadTodos = async () => {
     try {
       const data = await todoAPI.getAll();
-      const formattedTodos = data.map((todo: any) => ({
+      const formattedTodos = data.map((todo: TodoResponse) => ({
         id: todo._id,
         text: todo.text,
         completed: todo.completed,
