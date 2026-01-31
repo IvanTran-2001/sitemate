@@ -51,9 +51,22 @@
 @media (max-width: 600px) {
   .todo-form {
     flex-direction: column;
+    gap: 10px;
   }
 
   .todo-submit {
     width: 100%;
+  }
+}
+
+@media (max-width: 480px) {
+  .todo-input {
+    padding: 12px 14px;
+    font-size: 0.95rem;
+  }
+
+  .todo-submit {
+    padding: 12px 20px;
+    font-size: 0.95rem;
   }
 }

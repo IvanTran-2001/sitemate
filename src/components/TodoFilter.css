@@ -49,6 +49,28 @@
 
 @media (max-width: 600px) {
   .todo-filter {
+    flex-wrap: wrap;
+  }
+
+  .filter-btn {
+    flex: 1 1 calc(50% - 4px);
+    min-width: 120px;
+  }
+}
+
+@media (max-width: 480px) {
+  .todo-filter {
     flex-direction: column;
+    gap: 6px;
+    padding: 10px;
+  }
+
+  .filter-btn {
+    padding: 10px 12px;
+    font-size: 0.9rem;
+  }
+
+  .count {
+    font-size: 0.8rem;
   }
 }

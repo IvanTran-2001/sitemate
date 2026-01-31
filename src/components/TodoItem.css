@@ -99,6 +99,65 @@
   gap: 8px;
 }
 
+@media (max-width: 600px) {
+  .todo-item {
+    padding: 14px;
+  }
+
+  .todo-content {
+    gap: 10px;
+  }
+
+  .todo-text {
+    font-size: 0.95rem;
+  }
+
+  .btn {
+    padding: 6px 10px;
+    font-size: 0.8rem;
+  }
+}
+
+@media (max-width: 480px) {
+  .todo-item {
+    padding: 12px;
+  }
+
+  .todo-content {
+    flex-wrap: wrap;
+  }
+
+  .todo-text {
+    font-size: 0.9rem;
+    flex: 1 1 100%;
+    order: 2;
+    margin-top: 8px;
+  }
+
+  .todo-checkbox {
+    order: 1;
+  }
+
+  .todo-actions {
+    order: 3;
+    margin-left: auto;
+  }
+
+  .btn {
+    padding: 5px 8px;
+    font-size: 0.75rem;
+  }
+
+  .edit-input {
+    padding: 8px;
+    font-size: 0.9rem;
+  }
+
+  .edit-buttons {
+    gap: 6px;
+  }
+}
+
 .btn-save {
   background: #28a745;
   color: white;
