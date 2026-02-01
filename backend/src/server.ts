@@ -6,6 +6,7 @@ import todoRoutes from './routes/todoRoutes';
 
 dotenv.config();
 
+// Initialize Express app
 const app: Application = express();
 const PORT = process.env.PORT || 3000;
 const MONGODB_URI = process.env.MONGODB_URI || 'mongodb://localhost:27017/todoapp';
@@ -13,12 +14,16 @@ const MONGODB_URI = process.env.MONGODB_URI || 'mongodb://localhost:27017/todoap
 app.use(cors());
 app.use(express.json());
 
+// Basic route to check server status
 app.get('/', (req: Request, res: Response) => {
   res.json({ message: 'Todo API Server Running' });
 });
 
+// Todo routes
 app.use('/api/todos', todoRoutes);
 
+
+// "connect to DB, then start server, handle errors."
 mongoose
   .connect(MONGODB_URI)
   .then(() => {
